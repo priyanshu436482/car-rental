@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const { connectDB, getDB, getDefaultSettings } = require("./db");
@@ -8,7 +9,16 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
-app.use(express.static(__dirname));
+
+// Ensure DB for API routes only
+app.use("/api", async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        res.status(500).json({ ok: false, error: "Database connection failed: " + err.message });
+    }
+});
 
 function stripMongoId(doc) {
     if (!doc) return doc;
@@ -178,6 +188,12 @@ app.put("/api/settings", async (req, res) => {
     }
 });
 
+// Local static hosting
+app.use(express.static(__dirname));
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
+
 async function start() {
     try {
         await connectDB();
@@ -187,27 +203,15 @@ async function start() {
         });
     } catch (err) {
         console.error("Failed to start server:", err.message);
-        process.exit(1);
+        console.error("Serving site without MongoDB (API will fail until credentials work).");
+        app.listen(PORT, () => {
+            console.log(`DriveEasy running at http://localhost:${PORT} (DB offline)`);
+        });
     }
 }
 
-// Local: npm start | Vercel: serverless via export
+module.exports = app;
+
 if (require.main === module) {
     start();
-} else {
-    module.exports = async (req, res) => {
-        try {
-            await connectDB();
-        } catch (err) {
-            // Allow static pages to load; only API routes hard-fail
-            if (req.url && req.url.startsWith("/api/")) {
-                res.statusCode = 500;
-                res.setHeader("Content-Type", "application/json");
-                res.end(JSON.stringify({ ok: false, error: "Database connection failed: " + err.message }));
-                return;
-            }
-            console.error("DB unavailable:", err.message);
-        }
-        return app(req, res);
-    };
 }
