@@ -4,13 +4,13 @@
 
 window.DEFAULT_CAR_SVG = window.DEFAULT_CAR_SVG || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='250' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%231e293b'/%3E%3Cpath d='M80 160 L120 100 L280 100 L320 160 Z' fill='%23ff6600' opacity='0.8'/%3E%3Crect x='60' y='150' width='280' height='45' rx='10' fill='%23334155'/%3E%3Ccircle cx='110' cy='195' r='22' fill='%230f172a' stroke='%2394a3b8' stroke-width='4'/%3E%3Ccircle cx='290' cy='195' r='22' fill='%230f172a' stroke='%2394a3b8' stroke-width='4'/%3E%3Ccircle cx='110' cy='195' r='8' fill='%23e2e8f0'/%3E%3Ccircle cx='290' cy='195' r='8' fill='%23e2e8f0'/%3E%3Cpolygon points='135,108 265,108 275,150 125,150' fill='%2338bdf8' opacity='0.6'/%3E%3Ctext x='200' y='55' fill='%23f8fafc' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle'%3EDriveEasy Rental%3C/text%3E%3C/svg%3E";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    await initStore();
     initAdmin();
 });
 
 // Admin Initialization
 function initAdmin() {
-    initStore();
     checkAuthStatus();
     setupEventListeners();
     refreshAllData();
@@ -77,9 +77,9 @@ function setupEventListeners() {
     // Reset forgotten / changed admin credentials back to defaults
     const resetCredentialsBtn = document.getElementById("resetCredentialsBtn");
     if (resetCredentialsBtn) {
-        resetCredentialsBtn.addEventListener("click", () => {
+        resetCredentialsBtn.addEventListener("click", async () => {
             if (confirm("Reset admin login to default?\n\nUsername: admin\nPassword: admin123")) {
-                resetAdminCredentials();
+                await resetAdminCredentials();
                 document.getElementById("adminUser").value = "admin";
                 document.getElementById("adminPass").value = "admin123";
                 document.getElementById("loginError").style.display = "none";
@@ -424,7 +424,6 @@ function closeCarModal() {
 function handleSaveCar(e) {
     e.preventDefault();
     const idVal = document.getElementById("carId").value;
-    const cars = getCars();
 
     const carData = {
         id: idVal ? Number(idVal) : Date.now(),
@@ -438,22 +437,16 @@ function handleSaveCar(e) {
         image: document.getElementById("carImage").value.trim() || "images/car1.jpg"
     };
 
-    if (idVal) {
-        // Edit existing car
-        const idx = cars.findIndex(c => Number(c.id) === Number(idVal));
-        if (idx !== -1) cars[idx] = carData;
-    } else {
-        // Add new car
-        cars.push(carData);
-    }
-
-    localStorage.setItem("driveeasy_cars", JSON.stringify(cars));
-    closeCarModal();
-    refreshAllData();
-    showToast(`Car "${carData.name}" saved successfully!`, "success");
+    saveCar(carData).then(() => {
+        closeCarModal();
+        refreshAllData();
+        showToast(`Car "${carData.name}" saved successfully!`, "success");
+    }).catch(err => {
+        showToast("Failed to save car: " + err.message, "info");
+    });
 }
 
-function deleteCar(id) {
+async function deleteCar(id) {
     const cars = getCars();
     const car = cars.find(c => Number(c.id) === Number(id));
     const carName = car ? car.name : "this car";
@@ -462,11 +455,14 @@ function deleteCar(id) {
         return;
     }
 
-    const updated = cars.filter(c => Number(c.id) !== Number(id));
-    localStorage.setItem("driveeasy_cars", JSON.stringify(updated));
-    closeCarModal();
-    refreshAllData();
-    showToast(`"${carName}" deleted from fleet.`, "info");
+    try {
+        await deleteCarById(id);
+        closeCarModal();
+        refreshAllData();
+        showToast(`"${carName}" deleted from fleet.`, "info");
+    } catch (err) {
+        showToast("Failed to delete car: " + err.message, "info");
+    }
 }
 
 // Expose for inline onclick handlers
@@ -474,11 +470,6 @@ window.openCarModal = openCarModal;
 window.deleteCar = deleteCar;
 
 // Bookings Table Management
-function getBookings() {
-    initStore();
-    return JSON.parse(localStorage.getItem("driveeasy_bookings")) || [];
-}
-
 function renderBookingsTable() {
     const tbody = document.getElementById("bookingsTableBody");
     if (!tbody) return;
@@ -534,24 +525,28 @@ function renderBookingsTable() {
     `).join("");
 }
 
-function changeBookingStatus(id, newStatus) {
+async function changeBookingStatus(id, newStatus) {
     const bookings = getBookings();
     const idx = bookings.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        bookings[idx].status = newStatus;
-        localStorage.setItem("driveeasy_bookings", JSON.stringify(bookings));
+    if (idx === -1) return;
+    const updated = { ...bookings[idx], status: newStatus };
+    try {
+        await saveBooking(updated);
         refreshAllData();
         showToast(`Booking ${id} updated to ${newStatus}`, "success");
+    } catch (err) {
+        showToast("Failed to update booking: " + err.message, "info");
     }
 }
 
-function deleteBooking(id) {
-    if (confirm(`Delete booking record ${id}?`)) {
-        let bookings = getBookings();
-        bookings = bookings.filter(b => b.id !== id);
-        localStorage.setItem("driveeasy_bookings", JSON.stringify(bookings));
+async function deleteBooking(id) {
+    if (!confirm(`Delete booking record ${id}?`)) return;
+    try {
+        await deleteBookingById(id);
         refreshAllData();
         showToast("Booking record deleted.", "info");
+    } catch (err) {
+        showToast("Failed to delete booking: " + err.message, "info");
     }
 }
 
@@ -600,21 +595,16 @@ function handleSaveManualBooking(e) {
         date: new Date().toISOString().split('T')[0]
     };
 
-    const bookings = getBookings();
-    bookings.push(newBooking);
-    localStorage.setItem("driveeasy_bookings", JSON.stringify(bookings));
-
-    closeBookingModal();
-    refreshAllData();
-    showToast(`Manual booking ${newBooking.id} created!`, "success");
+    saveBooking(newBooking).then(() => {
+        closeBookingModal();
+        refreshAllData();
+        showToast(`Manual booking ${newBooking.id} created!`, "success");
+    }).catch(err => {
+        showToast("Failed to create booking: " + err.message, "info");
+    });
 }
 
 // Messages Management
-function getMessages() {
-    initStore();
-    return JSON.parse(localStorage.getItem("driveeasy_messages")) || [];
-}
-
 function renderMessagesTable() {
     const tbody = document.getElementById("messagesTableBody");
     if (!tbody) return;
@@ -652,23 +642,26 @@ function renderMessagesTable() {
     `).join("");
 }
 
-function markMessageRead(id) {
+async function markMessageRead(id) {
     const messages = getMessages();
     const idx = messages.findIndex(m => m.id === id);
-    if (idx !== -1) {
-        messages[idx].status = "Read";
-        localStorage.setItem("driveeasy_messages", JSON.stringify(messages));
+    if (idx === -1) return;
+    try {
+        await saveMessage({ ...messages[idx], status: "Read" });
         refreshAllData();
+    } catch (err) {
+        showToast("Failed to update message: " + err.message, "info");
     }
 }
 
-function deleteMessage(id) {
-    if (confirm("Delete this inquiry message?")) {
-        let messages = getMessages();
-        messages = messages.filter(m => m.id !== id);
-        localStorage.setItem("driveeasy_messages", JSON.stringify(messages));
+async function deleteMessage(id) {
+    if (!confirm("Delete this inquiry message?")) return;
+    try {
+        await deleteMessageById(id);
         refreshAllData();
         showToast("Message deleted.", "info");
+    } catch (err) {
+        showToast("Failed to delete message: " + err.message, "info");
     }
 }
 
@@ -695,9 +688,12 @@ function handleSaveSecuritySettings(e) {
     settings.adminUsername = newUser || settings.adminUsername;
     if (newPass) settings.adminPassword = newPass;
 
-    localStorage.setItem("driveeasy_settings", JSON.stringify(settings));
-    loadAdminProfile();
-    showToast("Security settings updated successfully!", "success");
+    saveSettings(settings).then(() => {
+        loadAdminProfile();
+        showToast("Security settings updated successfully!", "success");
+    }).catch(err => {
+        showToast("Failed to save settings: " + err.message, "info");
+    });
 }
 
 function handleSaveBusinessSettings(e) {
@@ -708,9 +704,12 @@ function handleSaveBusinessSettings(e) {
     settings.currency = document.getElementById("setCurrency").value.trim();
     settings.companyEmail = document.getElementById("setCompanyEmail").value.trim();
 
-    localStorage.setItem("driveeasy_settings", JSON.stringify(settings));
-    refreshAllData();
-    showToast("Business configuration saved!", "success");
+    saveSettings(settings).then(() => {
+        refreshAllData();
+        showToast("Business configuration saved!", "success");
+    }).catch(err => {
+        showToast("Failed to save settings: " + err.message, "info");
+    });
 }
 
 // Global Search

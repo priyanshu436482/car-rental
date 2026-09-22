@@ -9,7 +9,8 @@ Desktop.ini
 
 # Env / secrets
 .env
-.env.*
+.env.local
+!.env.example
 *.pem
 credentials.json
 

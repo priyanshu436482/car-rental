@@ -531,6 +531,7 @@ info@driveeasy.com
 
 
 
+<script src="api.js"></script>
 <script src="script.js"></script>
 
 
@@ -538,7 +539,7 @@ info@driveeasy.com
 
 document
 .getElementById("contactForm")
-.addEventListener("submit",function(e){
+.addEventListener("submit",async function(e){
 
 e.preventDefault();
 
@@ -547,7 +548,6 @@ let email=document.getElementById("cemail").value.trim();
 let phone=document.getElementById("cphone").value.trim();
 let message=document.getElementById("cmessage").value.trim();
 
-// Save inquiry to localStorage for Admin Panel
 const newMsg = {
     id: "MSG" + Math.floor(100 + Math.random() * 900),
     name: name,
@@ -558,9 +558,12 @@ const newMsg = {
     date: new Date().toISOString().split('T')[0]
 };
 
-let currentMessages = JSON.parse(localStorage.getItem("driveeasy_messages")) || [];
-currentMessages.push(newMsg);
-localStorage.setItem("driveeasy_messages", JSON.stringify(currentMessages));
+try {
+    await saveMessage(newMsg);
+} catch (err) {
+    alert("Could not save message: " + err.message);
+    return;
+}
 
 let settings = getSettings();
 let whatsappMessage =
