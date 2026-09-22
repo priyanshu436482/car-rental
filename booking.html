@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Book a car with DriveEasy Car Rental - Fast, easy online booking with WhatsApp confirmation.">
+<title>Book a Car | DriveEasy Car Rental</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ========== BOOKING PAGE — LIGHT THEME (matches home page) ========== */
+
+.booking-page {
+    padding: 80px 8%;
+    background: #f5f5f5;
+    min-height: 80vh;
+}
+
+.booking-page .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.booking-page .page-header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 102, 0, 0.1);
+    color: #ff6600;
+    border: 1px solid rgba(255, 102, 0, 0.25);
+    padding: 6px 18px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.booking-page .page-header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 12px;
+}
+
+.booking-page .page-header h1 span {
+    color: #ff6600;
+}
+
+.booking-page .page-header p {
+    color: #666;
+    font-size: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* ========== FORM CARD ========== */
+.booking-card {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.card-banner {
+    background: #ff6600;
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.card-banner .banner-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.card-banner h2 {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.card-banner p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+}
+
+.card-body {
+    padding: 40px;
+}
+
+/* ========== FORM GRID ========== */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+/* ========== FIELD GROUPS ========== */
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.field-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.field-group label i {
+    color: #ff6600;
+    font-size: 12px;
+}
+
+.field-group input,
+.field-group select,
+.field-group textarea {
+    width: 100%;
+    padding: 13px 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #333;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.field-group select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-color: #fff;
+    padding-right: 40px;
+}
+
+.field-group select option {
+    background: #fff;
+    color: #333;
+}
+
+.field-group input::placeholder,
+.field-group textarea::placeholder {
+    color: #aaa;
+}
+
+.field-group input:focus,
+.field-group select:focus,
+.field-group textarea:focus {
+    border-color: #ff6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+.field-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.field-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ========== DATE ROW ========== */
+.date-range-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* ========== COST ESTIMATOR ========== */
+.cost-estimator {
+    grid-column: 1 / -1;
+    background: #fff8f4;
+    border: 1.5px solid rgba(255, 102, 0, 0.2);
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.cost-estimator.visible {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.cost-estimator h4 {
+    color: #ff6600;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #666;
+}
+
+.cost-row:last-child {
+    border-bottom: none;
+    padding-top: 12px;
+    margin-top: 4px;
+}
+
+.cost-row.total {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+}
+
+.cost-row.total .amount {
+    color: #ff6600;
+    font-size: 22px;
+}
+
+/* ========== DIVIDER ========== */
+.form-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: #eee;
+    margin: 6px 0;
+}
+
+/* ========== SUBMIT BUTTON ========== */
+.submit-btn {
+    grid-column: 1 / -1;
+    padding: 16px;
+    background: #ff6600;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 8px;
+}
+
+.submit-btn:hover {
+    background: #222;
+    transform: translateY(-2px);
+}
+
+.submit-btn i {
+    font-size: 18px;
+}
+
+/* ========== TRUST BADGES ========== */
+.trust-row {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #999;
+    font-weight: 500;
+}
+
+.trust-badge i {
+    color: #22c55e;
+    font-size: 13px;
+}
+
+/* ========== SUCCESS MESSAGE ========== */
+.booking-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    gap: 16px;
+    animation: fadeIn 0.5s ease;
+}
+
+.booking-success .success-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(34, 197, 94, 0.08);
+    border: 2px solid rgba(34, 197, 94, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #22c55e;
+}
+
+.booking-success h3 {
+    color: #111;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.booking-success p {
+    color: #666;
+    font-size: 15px;
+    max-width: 380px;
+}
+
+.success-booking-id {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: #fff8f4;
+    border: 1.5px solid rgba(255, 102, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(255, 102, 0, 0.08);
+    padding: 16px 36px;
+    border-radius: 10px;
+}
+
+.success-booking-id .id-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #999;
+}
+
+.success-booking-id .id-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ff6600;
+    letter-spacing: 1px;
+}
+
+.success-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.btn-primary {
+    padding: 13px 28px;
+    background: #ff6600;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background: #222;
+}
+
+.btn-secondary {
+    padding: 13px 28px;
+    background: #fff;
+    color: #555;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    border-color: #ff6600;
+    color: #ff6600;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 640px) {
+    .booking-page    { padding: 50px 5%; }
+    .card-banner     { padding: 20px 24px; }
+    .card-body       { padding: 24px; }
+    .form-grid       { grid-template-columns: 1fr; }
+    .date-range-row  { grid-template-columns: 1fr; }
+    .card-banner h2  { font-size: 18px; }
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<div class="logo">
+<i class="fa-solid fa-car"></i>
+<h2>DriveEasy</h2>
+</div>
+
+<nav>
+<ul id="menu">
+<li><a href="index.html">Home</a></li>
+<li><a href="cars.html">Cars</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="booking.html" class="active">Booking</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+<div class="menu-btn">
+<i class="fa-solid fa-bars"></i>
+</div>
+</nav>
+</header>
+
+<section class="booking-page">
+    <div class="page-header">
+        <div class="badge"><i class="fa-solid fa-car-side"></i> Online Booking</div>
+        <h1>Book Your <span>Perfect Car</span></h1>
+        <p>Fill in your details below and we'll confirm your booking instantly via WhatsApp.</p>
+    </div>
+
+    <div class="booking-card">
+        <div class="card-banner">
+            <div class="banner-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div>
+                <h2>Reservation Form</h2>
+                <p>Quick & easy • Instant WhatsApp confirmation</p>
+            </div>
+        </div>
+
+        <!-- BOOKING FORM -->
+        <div class="card-body">
+            <div id="bookingSuccess" class="booking-success">
+                <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+                <h3>Booking Submitted!</h3>
+                <p>Your reservation has been received. We'll confirm via WhatsApp shortly.</p>
+                <div class="success-booking-id">
+                    <span class="id-label">Booking ID</span>
+                    <span class="id-value" id="successBookingId">BK0000</span>
+                </div>
+                <div class="success-actions">
+                    <a href="cars.html" class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Browse Cars</a>
+                    <button class="btn-primary" onclick="resetForm()"><i class="fa-solid fa-plus"></i> New Booking</button>
+                </div>
+            </div>
+
+            <form id="bookingForm">
+                <div class="form-grid">
+
+                    <!-- Personal Info -->
+                    <div class="field-group">
+                        <label><i class="fa-solid fa-user"></i> Full Name</label>
+                        <input type="text" id="name" placeholder="e.g. Rajesh Sharma" required>
+                    </div>
+
+                    <div class="field-group">
+                        <label><i class="fa-solid fa-phone"></i> Mobile Number</label>
+                        <input type="tel" id="phone" placeholder="+91 98765 43210" required>
+                    </div>
+
+                    <div class="field-group full-width">
+                        <label><i class="fa-solid fa-envelope"></i> Email Address</label>
+                        <input type="email" id="email" placeholder="yourname@example.com" required>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <!-- Car & Location -->
+                    <div class="field-group full-width">
+                        <label><i class="fa-solid fa-car"></i> Select Car</label>
+                        <select id="car" required>
+                            <option value="">— Choose your vehicle —</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group full-width">
+                        <label><i class="fa-solid fa-location-dot"></i> Pickup Location</label>
+                        <input type="text" id="pickup" placeholder="e.g. Ahmedabad Airport, SG Highway..." required>
+                    </div>
+
+                    <!-- Date Range -->
+                    <div class="date-range-row">
+                        <div class="field-group">
+                            <label><i class="fa-solid fa-calendar"></i> Pickup Date</label>
+                            <input type="date" id="pickupDate" required>
+                        </div>
+                        <div class="field-group">
+                            <label><i class="fa-solid fa-calendar-xmark"></i> Return Date</label>
+                            <input type="date" id="returnDate" required>
+                        </div>
+                    </div>
+
+                    <!-- Live Cost Estimator -->
+                    <div class="cost-estimator" id="costEstimator">
+                        <h4><i class="fa-solid fa-calculator"></i> Trip Cost Estimate</h4>
+                        <div class="cost-row">
+                            <span id="costCarName">—</span>
+                            <span id="costPerDay">—</span>
+                        </div>
+                        <div class="cost-row">
+                            <span>Duration</span>
+                            <span id="costDays">— days</span>
+                        </div>
+                        <div class="cost-row total">
+                            <span>Estimated Total</span>
+                            <span class="amount" id="costTotal">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="field-group full-width">
+                        <label><i class="fa-solid fa-comment-dots"></i> Additional Notes <span style="color:#64748b;font-size:11px;font-weight:400;text-transform:none">(optional)</span></label>
+                        <textarea id="message" placeholder="Any special requests, preferred pick-up time, etc."></textarea>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="submit-btn">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        Confirm Booking via WhatsApp
+                    </button>
+
+                    <!-- Trust badges -->
+                    <div class="trust-row">
+                        <span class="trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure Form</span>
+                        <span class="trust-badge"><i class="fa-solid fa-check-circle"></i> Instant Confirmation</span>
+                        <span class="trust-badge"><i class="fa-solid fa-headset"></i> 24/7 Support</span>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<footer>
+<div class="footer">
+<div>
+<h3>DriveEasy</h3>
+<p>Premium Car Rental Service.</p>
+</div>
+<div>
+<h3>Quick Links</h3>
+<a href="index.html">Home</a>
+<a href="cars.html">Cars</a>
+<a href="booking.html">Booking</a>
+<a href="contact.html">Contact</a>
+</div>
+<div>
+<h3>Contact</h3>
+<p>Email : info@driveeasy.com</p>
+<p>Phone : +91 9876543210</p>
+</div>
+</div>
+<div class="copy">
+<p>© 2026 DriveEasy Car Rental. All Rights Reserved.</p>
+</div>
+</footer>
+
+<a href="https://wa.me/919876543210" class="whatsapp" title="WhatsApp Chat">
+<i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<script src="script.js"></script>
+<script>
+(function () {
+    const carSelect     = document.getElementById("car");
+    const pickupDateEl  = document.getElementById("pickupDate");
+    const returnDateEl  = document.getElementById("returnDate");
+    const estimator     = document.getElementById("costEstimator");
+    const costCarName   = document.getElementById("costCarName");
+    const costPerDay    = document.getElementById("costPerDay");
+    const costDays      = document.getElementById("costDays");
+    const costTotal     = document.getElementById("costTotal");
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split("T")[0];
+    pickupDateEl.min = today;
+    returnDateEl.min = today;
+
+    // Populate car dropdown
+    document.addEventListener("DOMContentLoaded", function () {
+        const cars = getCars();
+        cars.forEach(c => {
+            const opt = document.createElement("option");
+            opt.value = c.name;
+            opt.dataset.price = c.price;
+            opt.textContent = `${c.name}  —  ₹${Number(c.price).toLocaleString()}/day`;
+            carSelect.appendChild(opt);
+        });
+
+        // Pre-fill from URL params
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("car")) {
+            const urlCar = params.get("car");
+            if (carSelect.querySelector(`option[value="${urlCar}"]`)) {
+                carSelect.value = urlCar;
+            }
+        }
+        if (params.has("pickup"))      document.getElementById("pickup").value = params.get("pickup");
+        if (params.has("pickupDate"))  pickupDateEl.value = params.get("pickupDate");
+        if (params.has("returnDate"))  returnDateEl.value = params.get("returnDate");
+
+        updateEstimate();
+    });
+
+    // Live cost estimate
+    function updateEstimate() {
+        const selectedOpt = carSelect.options[carSelect.selectedIndex];
+        const price       = parseFloat(selectedOpt?.dataset?.price);
+        const p           = new Date(pickupDateEl.value);
+        const r           = new Date(returnDateEl.value);
+        const days        = Math.ceil((r - p) / (1000 * 60 * 60 * 24));
+
+        if (price && days >= 1) {
+            const total = price * days;
+            costCarName.textContent = selectedOpt.value;
+            costPerDay.textContent  = `₹${Number(price).toLocaleString()} / day`;
+            costDays.textContent    = `${days} day${days > 1 ? "s" : ""}`;
+            costTotal.textContent   = `₹${Number(total).toLocaleString()}`;
+            estimator.classList.add("visible");
+        } else {
+            estimator.classList.remove("visible");
+        }
+    }
+
+    carSelect.addEventListener("change", updateEstimate);
+    pickupDateEl.addEventListener("change", function () {
+        // Ensure return date is not before pickup date
+        if (returnDateEl.value && returnDateEl.value < this.value) {
+            returnDateEl.value = this.value;
+        }
+        returnDateEl.min = this.value;
+        updateEstimate();
+    });
+    returnDateEl.addEventListener("change", updateEstimate);
+
+    // Submit
+    document.getElementById("bookingForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const name       = document.getElementById("name").value.trim();
+        const phone      = document.getElementById("phone").value.trim();
+        const email      = document.getElementById("email").value.trim();
+        const car        = carSelect.value;
+        const pickup     = document.getElementById("pickup").value.trim();
+        const pickupDate = pickupDateEl.value;
+        const returnDate = returnDateEl.value;
+        const message    = document.getElementById("message").value.trim();
+        const settings   = getSettings();
+
+        // Calculate amount
+        const selectedOpt = carSelect.options[carSelect.selectedIndex];
+        const price       = parseFloat(selectedOpt?.dataset?.price) || 2500;
+        const days        = Math.max(1, Math.ceil((new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24)));
+        const totalAmount = price * days;
+
+        // Save booking
+        const bookingId = "BK" + Math.floor(1000 + Math.random() * 9000);
+        const newBooking = {
+            id: bookingId, name, phone, email, car,
+            pickup, pickupDate, returnDate, message,
+            status: "Pending", amount: totalAmount,
+            date: new Date().toISOString().split("T")[0]
+        };
+
+        let bookings = JSON.parse(localStorage.getItem("driveeasy_bookings")) || [];
+        bookings.push(newBooking);
+        localStorage.setItem("driveeasy_bookings", JSON.stringify(bookings));
+
+        // WhatsApp message
+        const currency = settings.currency || "₹";
+        let text = "🚗 *New Car Rental Booking*%0A%0A";
+        text += `🆔 Booking ID: ${bookingId}%0A`;
+        text += `👤 Name: ${name}%0A`;
+        text += `📞 Phone: ${phone}%0A`;
+        text += `📧 Email: ${email}%0A`;
+        text += `🚘 Car: ${car}%0A`;
+        text += `📍 Pickup: ${pickup}%0A`;
+        text += `📅 Pickup Date: ${pickupDate}%0A`;
+        text += `📅 Return Date: ${returnDate}%0A`;
+        text += `💰 Estimated Total: ${currency}${Number(totalAmount).toLocaleString()}%0A`;
+        if (message) text += `💬 Notes: ${message}`;
+
+        // Show success state
+        document.getElementById("bookingForm").style.display = "none";
+        const successEl = document.getElementById("bookingSuccess");
+        successEl.style.display = "flex";
+        document.getElementById("successBookingId").textContent = bookingId;
+
+        // Open WhatsApp
+        setTimeout(() => {
+            window.open("https://wa.me/" + (settings.whatsappPhone || "919876543210") + "?text=" + text, "_blank");
+        }, 800);
+    });
+
+    window.resetForm = function () {
+        document.getElementById("bookingForm").reset();
+        document.getElementById("bookingForm").style.display = "block";
+        document.getElementById("bookingSuccess").style.display = "none";
+        estimator.classList.remove("visible");
+    };
+})();
+</script>
+
+</body>
+</html>

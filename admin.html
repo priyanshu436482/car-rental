@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | DriveEasy Car Rental</title>
+    
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <!-- Login Authentication Screen -->
+    <div id="authScreen">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fa-solid fa-car-side"></i>
+                <h2>DriveEasy Admin</h2>
+                <p>Enter your admin credentials to access panel</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminUser">Username</label>
+                    <input type="text" id="adminUser" class="form-input" placeholder="Enter admin username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPass">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="adminPass" class="form-input" placeholder="Enter password" required autocomplete="current-password">
+                        <button type="button" class="toggle-password-btn" data-target="adminPass" aria-label="Toggle password visibility" title="Show/Hide Password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="loginError" style="color: #ef4444; font-size: 13px; margin-bottom: 15px; display: none;">
+                    Invalid username or password.
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard
+                </button>
+
+                <p style="margin-top: 16px; text-align: center; font-size: 13px; color: #64748b;">
+                    Default: <strong>admin</strong> / <strong>admin123</strong><br>
+                    <button type="button" id="resetCredentialsBtn" style="margin-top: 8px; background: none; border: none; color: #ff6600; cursor: pointer; font-size: 13px; text-decoration: underline; padding: 0;">
+                        Can't log in? Reset credentials
+                    </button>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard UI Wrapper -->
+    <div class="admin-wrapper" id="adminApp" style="display: none;">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-car"></i>
+                <h2>DriveEasy</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-tab="fleet">
+                    <i class="fa-solid fa-car-rear"></i>
+                    <span>Fleet (Cars)</span>
+                </div>
+                <div class="nav-item" data-tab="bookings">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </div>
+                <div class="nav-item" data-tab="messages">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Messages</span>
+                </div>
+                <div class="nav-item" data-tab="settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Settings</span>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Top Navbar -->
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="toggle-sidebar-btn" id="toggleSidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="globalSearch" placeholder="Search cars, bookings...">
+                    </div>
+                </div>
+
+                <div class="user-profile">
+                    <a href="index.html" target="_blank" style="font-size: 13px; color: var(--primary); font-weight: 500; text-decoration: none; margin-right: 15px;">
+                        <i class="fa-solid fa-globe"></i> View Website
+                    </a>
+                    
+                    <div class="user-avatar" id="adminAvatar">A</div>
+                    <div class="user-info">
+                        <h4 id="adminDisplayName">Admin Account</h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content Panels -->
+            <div class="dashboard-content">
+
+                <!-- Tab 1: Overview Dashboard -->
+                <section class="tab-pane active" id="dashboardTab">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h1>Overview Dashboard</h1>
+                            <p>Real-time analytics and activity summary</p>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon orange">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="statRevenue">₹0</h3>
+                                <p>Total Revenue</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="statBookings">0</h3>
+                                <p>Total Bookings</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-car"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="statCars">0</h3>
+                                <p>Cars in Fleet</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon purple">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="statMessages">0</h3>
+                                <p>Customer Messages</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Section -->
+                    <div class="card-box">
+                        <div class="card-title-bar">
+                            <h3>Recent Bookings</h3>
+                            <button class="btn-action" onclick="switchTab('bookings')">View All</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer</th>
+                                        <th>Car</th>
+                                        <th>Pickup Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentBookingsTable">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 2: Fleet Management -->
+                <section class="tab-pane" id="fleetTab">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h1>Fleet Inventory Management</h1>
+                            <p>Add, update, or remove cars from rental list</p>
+                        </div>
+                        <button class="btn-add-new" id="openAddCarModal">
+                            <i class="fa-solid fa-plus"></i> Add New Car
+                        </button>
+                    </div>
+
+                    <div class="fleet-grid" id="fleetContainer">
+                        <!-- Dynamic Car Cards -->
+                    </div>
+                </section>
+
+                <!-- Tab 3: Bookings Management -->
+                <section class="tab-pane" id="bookingsTab">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h1>All Bookings</h1>
+                            <p>Manage customer rental requests and statuses</p>
+                        </div>
+                        <button class="btn-add-new" id="openAddBookingModal">
+                            <i class="fa-solid fa-plus"></i> New Manual Booking
+                        </button>
+                    </div>
+
+                    <div class="card-box">
+                        <div class="card-title-bar" style="flex-wrap: wrap; gap: 15px;">
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <select id="filterBookingStatus" class="form-input" style="width: auto; padding: 8px 12px;">
+                                    <option value="All">All Statuses</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Customer</th>
+                                        <th>Contact</th>
+                                        <th>Vehicle</th>
+                                        <th>Dates</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 4: Messages / Inquiries -->
+                <section class="tab-pane" id="messagesTab">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h1>Customer Inquiries</h1>
+                            <p>Contact messages received from website</p>
+                        </div>
+                    </div>
+
+                    <div class="card-box">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Customer Name</th>
+                                        <th>Contact Info</th>
+                                        <th>Message</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="messagesTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 5: Settings -->
+                <section class="tab-pane" id="settingsTab">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h1>Admin Settings</h1>
+                            <p>Configure credentials and business details</p>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                        
+                        <!-- Account Security Card -->
+                        <div class="card-box">
+                            <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-lock"></i> Security Credentials</h3>
+                            <form id="settingsSecurityForm">
+                                <div class="form-group">
+                                    <label>Admin Username</label>
+                                    <input type="text" id="setAdminUser" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>New Admin Password</label>
+                                    <div class="password-wrapper">
+                                        <input type="password" id="setAdminPass" class="form-input" placeholder="Leave blank to keep current">
+                                        <button type="button" class="toggle-password-btn" data-target="setAdminPass" aria-label="Toggle password visibility" title="Show/Hide Password">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-primary" style="padding: 10px;">Update Credentials</button>
+                            </form>
+                        </div>
+
+                        <!-- Business Settings Card -->
+                        <div class="card-box">
+                            <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-building"></i> Business Config</h3>
+                            <form id="settingsBusinessForm">
+                                <div class="form-group">
+                                    <label>WhatsApp Contact Number (with country code)</label>
+                                    <input type="text" id="setWhatsapp" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Currency Symbol</label>
+                                    <input type="text" id="setCurrency" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Company Email</label>
+                                    <input type="email" id="setCompanyEmail" class="form-input" required>
+                                </div>
+                                <button type="submit" class="btn-primary" style="padding: 10px;">Save Config</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Add / Edit Car -->
+    <div class="modal-overlay" id="carModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="carModalTitle">Add New Car</h3>
+                <button class="close-modal" id="closeCarModal">&times;</button>
+            </div>
+            <form id="carForm">
+                <div class="modal-body">
+                    <input type="hidden" id="carId">
+                    
+                    <div class="form-group">
+                        <label>Car Name / Title</label>
+                        <input type="text" id="carName" class="form-input" placeholder="e.g. BMW X5" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="carCategory" class="form-input" required>
+                                <option value="SUV">SUV</option>
+                                <option value="Sedan">Sedan</option>
+                                <option value="Luxury">Luxury</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Hatchback">Hatchback</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rental Price / Day (₹)</label>
+                            <input type="number" id="carPrice" class="form-input" placeholder="5000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Transmission</label>
+                            <select id="carTransmission" class="form-input" required>
+                                <option value="Automatic">Automatic</option>
+                                <option value="Manual">Manual</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fuel Type</label>
+                            <select id="carFuel" class="form-input" required>
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Electric">Electric</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Seats</label>
+                            <input type="number" id="carSeats" class="form-input" value="5" min="2" max="10" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="carStatus" class="form-input" required>
+                                <option value="Available">Available</option>
+                                <option value="Rented">Rented</option>
+                                <option value="Maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Car Image</label>
+                        
+                        <!-- Upload Dropzone Area -->
+                        <div class="image-upload-dropzone" id="carDropzone">
+                            <input type="file" id="carImageFile" accept="image/*" style="display: none;">
+                            <div class="dropzone-content">
+                                <div class="dropzone-icon">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                </div>
+                                <div class="dropzone-text">
+                                    <strong>Click to upload</strong> or drag and drop photo
+                                </div>
+                                <div class="dropzone-hint">PNG, JPG, WEBP or SVG (Max 5MB)</div>
+                            </div>
+                        </div>
+
+                        <!-- Active Image Preview & Action Bar -->
+                        <div id="imagePreviewContainer" class="image-preview-wrapper" style="display: block;">
+                            <div class="preview-card">
+                                <img id="carImagePreview" src="images/car1.jpg" alt="Car Preview" onerror="this.onerror=null; if(window.DEFAULT_CAR_SVG) this.src=window.DEFAULT_CAR_SVG;">
+                                <div class="preview-overlay">
+                                    <button type="button" class="preview-action-btn change" id="triggerFileSelect">
+                                        <i class="fa-solid fa-camera"></i> Change Photo
+                                    </button>
+                                    <button type="button" class="preview-action-btn url-toggle" id="toggleUrlInput">
+                                        <i class="fa-solid fa-link"></i> Direct URL
+                                    </button>
+                                    <button type="button" class="preview-action-btn delete" id="deleteCarImageBtn">
+                                        <i class="fa-solid fa-trash-can"></i> Delete Photo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible URL Input Field -->
+                        <div id="urlInputContainer" class="url-input-box" style="display: none; margin-top: 10px;">
+                            <div class="url-input-wrapper">
+                                <i class="fa-solid fa-globe url-icon"></i>
+                                <input type="text" id="carImage" class="form-input" placeholder="Paste image URL (e.g., https://...)" value="images/car1.jpg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-danger" id="deleteCarFromModal" style="display: none; margin-right: auto;">
+                        <i class="fa-solid fa-trash"></i> Delete Car
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancelCarModal">Cancel</button>
+                    <button type="submit" class="btn-primary" style="width: auto; padding: 10px 24px;">Save Car</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Booking -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Create Offline Booking</h3>
+                <button class="close-modal" id="closeBookingModal">&times;</button>
+            </div>
+            <form id="manualBookingForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="mbName" class="form-input" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="mbPhone" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="mbEmail" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Car</label>
+                        <select id="mbCar" class="form-input" required>
+                            <!-- Dynamic options -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pickup Location</label>
+                        <input type="text" id="mbPickup" class="form-input" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Pickup Date</label>
+                            <input type="date" id="mbPickupDate" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Return Date</label>
+                            <input type="date" id="mbReturnDate" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Booking Status</label>
+                        <select id="mbStatus" class="form-input" required>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelBookingModal">Cancel</button>
+                    <button type="submit" class="btn-primary" style="width: auto; padding: 10px 24px;">Create Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <script src="script.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

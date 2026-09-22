@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="carGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6600"/>
+      <stop offset="100%" stop-color="#ff8533"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)"/>
+  <!-- Car Silhouette -->
+  <path d="M 120 260 L 170 170 C 190 140, 240 130, 290 130 L 390 130 C 430 130, 470 160, 495 210 L 520 260 Z" fill="url(#carGrad)"/>
+  <rect x="90" y="240" width="440" height="60" rx="15" fill="#334155"/>
+  <!-- Windows -->
+  <polygon points="200,145 285,145 285,200 175,200" fill="#38bdf8" opacity="0.75"/>
+  <polygon points="295,145 390,145 425,200 295,200" fill="#38bdf8" opacity="0.75"/>
+  <!-- Wheels -->
+  <circle cx="170" cy="300" r="35" fill="#0f172a" stroke="#94a3b8" stroke-width="6"/>
+  <circle cx="170" cy="300" r="12" fill="#ff6600"/>
+  <circle cx="430" cy="300" r="35" fill="#0f172a" stroke="#94a3b8" stroke-width="6"/>
+  <circle cx="430" cy="300" r="12" fill="#ff6600"/>
+  <!-- Headlight -->
+  <polygon points="510,250 530,250 525,270 505,270" fill="#fbbf24"/>
+  <text x="300" y="70" fill="#f8fafc" font-family="'Poppins', sans-serif" font-size="24" font-weight="bold" text-anchor="middle" letter-spacing="2">DRIVE EASY RENTAL</text>
+</svg>
