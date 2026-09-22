@@ -110,10 +110,29 @@ function setupEventListeners() {
 
     // Mobile Sidebar Toggle
     const toggleSidebar = document.getElementById("toggleSidebar");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    const closeMobileSidebar = () => {
+        sidebar?.classList.remove("show");
+        sidebarOverlay?.classList.remove("show");
+        document.body.classList.remove("sidebar-open");
+    };
+
+    const openMobileSidebar = () => {
+        sidebar?.classList.add("show");
+        sidebarOverlay?.classList.add("show");
+        document.body.classList.add("sidebar-open");
+    };
+
     if (toggleSidebar) {
         toggleSidebar.addEventListener("click", () => {
-            document.getElementById("sidebar").classList.toggle("show");
+            if (sidebar?.classList.contains("show")) closeMobileSidebar();
+            else openMobileSidebar();
         });
+    }
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", closeMobileSidebar);
     }
 
     // Modal Events - Add Car
@@ -266,7 +285,9 @@ function switchTab(tabId) {
     if (activePane) activePane.classList.add("active");
 
     // Close mobile sidebar if open
-    document.getElementById("sidebar").classList.remove("show");
+    document.getElementById("sidebar")?.classList.remove("show");
+    document.getElementById("sidebarOverlay")?.classList.remove("show");
+    document.body.classList.remove("sidebar-open");
 
     refreshAllData();
 }
