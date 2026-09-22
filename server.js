@@ -198,10 +198,16 @@ if (require.main === module) {
     module.exports = async (req, res) => {
         try {
             await connectDB();
-            return app(req, res);
         } catch (err) {
-            res.statusCode = 500;
-            res.end("Database connection failed: " + err.message);
+            // Allow static pages to load; only API routes hard-fail
+            if (req.url && req.url.startsWith("/api/")) {
+                res.statusCode = 500;
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify({ ok: false, error: "Database connection failed: " + err.message }));
+                return;
+            }
+            console.error("DB unavailable:", err.message);
         }
+        return app(req, res);
     };
 }

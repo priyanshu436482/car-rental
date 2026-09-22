@@ -41,17 +41,33 @@ function getDefaultSettings() {
 
 const defaultSettings = getDefaultSettings();
 
+function buildMongoUri() {
+    const user = process.env.MONGODB_USER;
+    const pass = process.env.MONGODB_PASSWORD;
+    const host = process.env.MONGODB_HOST || "cluster0.vg8xgoh.mongodb.net";
+    const dbName = process.env.MONGODB_DB || "driveeasy";
+
+    // Preferred: separate user/password (handles @ and special chars safely)
+    if (user && pass) {
+        return `mongodb+srv://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@${host}/${dbName}?appName=Cluster0`;
+    }
+
+    // Fallback: full URI (password with @ must already be encoded as %40)
+    const uri = process.env.MONGODB_URI;
+    if (uri) return uri;
+
+    throw new Error(
+        "MongoDB config missing. Set MONGODB_USER + MONGODB_PASSWORD (recommended) or MONGODB_URI."
+    );
+}
+
 async function connectDB() {
     if (db) return db;
 
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-        throw new Error("MONGODB_URI is missing. Add it to your .env file.");
-    }
-
+    const uri = buildMongoUri();
     client = new MongoClient(uri);
     await client.connect();
-    db = client.db();
+    db = client.db(process.env.MONGODB_DB || undefined);
     await seedIfEmpty();
     console.log("Connected to MongoDB Atlas");
     return db;
